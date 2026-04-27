@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue"
 
+
 function onListClick() {
   window.alert("Boo!");
 }
@@ -8,6 +9,11 @@ function onListClick() {
 
 <template>
   <button @click="onListClick">
-    Don't click this is super scary 
+    Don't click this is super scary
   </button>
+  <router-view />
+  <br>
+  <router-link to="/" >Take me back home</router-link>
+  <br>
+  <router-link to="/cities" >To the cities</router-link>
 </template>

@@ -1,8 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import CitiesList from './views/CitiesList.vue'
+import router from "./router"
 import "./style.scss"
 
-createApp(App).mount('#app')
-createApp(CitiesList).mount('#CitiesList')
+const app = createApp(App)
 
+app.use(router)
+
+app.mount('#app')
