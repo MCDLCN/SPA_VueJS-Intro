@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from "vue"
-
 
 function onListClick() {
   window.alert("Boo!");

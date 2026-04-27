@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import City from '../components/City.vue';
 
 
 </script>
@@ -8,4 +8,10 @@ import { ref } from "vue"
   <h1>
     Weather - list of cities
   </h1>
+  <City
+    name="My city"
+    weather="cloudy"
+    :temperature="20.55"
+    :updatedAt="new Date()"
+  />
 </template>
