@@ -15,3 +15,12 @@ defineProps({
     <p>Update: {{ updatedAt.toLocaleString() }}</p>
   </div>
 </template>
+
+<style scoped>
+div {
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f8f8f8;
+}
+</style>    
