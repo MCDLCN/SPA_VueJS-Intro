@@ -169,3 +169,12 @@ The frontend becomes just a consumer of a secured API.
 # deep in vue
 
 Styles are scoped to the component so you need deep to get out of the scope and apply it
+
+# differences between axiom and fetch
+
+| Feature        | fetch              | Axios                |
+| -------------- | ------------------ | -------------------- |
+| Built-in       | yes                | no (install)         |
+| JSON parsing   | manual (`.json()`) | automatic            |
+| Error handling | manual check       | throws automatically |
+| Syntax         | more verbose       | cleaner              |

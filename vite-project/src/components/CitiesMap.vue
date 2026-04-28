@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import { LMap, LTileLayer, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 
 const cities = ref([])
@@ -21,70 +22,84 @@ const frenchCities = [
   { id: 12, name: 'Grenoble', latitude: 45.1885, longitude: 5.7245 }
 ]
 
-const getWeatherIcon = (code) => {
-  if (code === 0) return '☀️'
-  if ([1, 2, 3].includes(code)) return '⛅'
-  if ([45, 48].includes(code)) return '🌫️'
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️'
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️'
-  if ([95, 96, 99].includes(code)) return '⛈️'
-
-  return '🌡️'
-}
-
 onMounted(async () => {
   loading.value = true
   error.value = null
 
   try {
-    cities.value = await Promise.all(
+    const results = await Promise.all(
       frenchCities.map(async (city) => {
-        const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code`
+        const res = await axios.get(
+          `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,weather_code`
         )
 
-        const data = await response.json()
-
         return {
-        ...city,
-        temperature: data.current.temperature_2m,
-        weatherCode: data.current.weather_code,
-        updatedAt: new Date(data.current.time)
+          ...city,
+          temperature: res.data.current.temperature_2m,
+          weatherCode: res.data.current.weather_code,
+          updatedAt: new Date(res.data.current.time)
         }
       })
     )
+
+    cities.value = results
   } catch (e) {
     error.value = 'Request failed'
   } finally {
     loading.value = false
   }
 })
+
+const getWeatherIcon = (code) => {
+  if (code === 0) return '☀️'
+
+  if ([1, 2, 3].includes(code)) return '⛅'
+
+  if ([45, 48].includes(code)) return '🌫️'
+
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️'
+
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️'
+
+  if ([95, 96, 99].includes(code)) return '⛈️'
+
+  return '🌡️'
+}
 </script>
 
 <template>
   <p v-if="loading">Request in progress</p>
   <p v-if="error" class="error">{{ error }}</p>
 
-  <l-map id="map" style="height: 800px" :zoom="5" :center="[46.603354, 1.888334]">
+  <l-map id="map" class="map" style="height: 600px" :zoom="5" :center="[46.603354, 1.888334]">
     <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
     <l-marker
-    v-for="city in cities"
-    :key="city.id"
-    :lat-lng="[city.latitude, city.longitude]"
+      v-for="city in cities"
+      :key="city.id"
+      :lat-lng="[city.latitude, city.longitude]"
     >
-    <l-icon>
+      <l-icon>
         <div class="weather-marker">
-        {{ getWeatherIcon(city.weatherCode) }}
+          {{ getWeatherIcon(city.weatherCode) }}
         </div>
-    </l-icon>
+      </l-icon>
     </l-marker>
   </l-map>
 </template>
 
 <style scoped>
+.map {
+  height: 600px;
+  width: 100%;
+}
+
 .error {
   color: red;
+}
+
+.weather-marker {
+  font-size: 28px;
 }
 
 #map :deep(.leaflet-marker-icon) {
@@ -94,13 +109,5 @@ onMounted(async () => {
 
 #map :deep(.leaflet-marker-shadow) {
   display: none;
-}
-
-.weather-marker {
-  font-size: 28px;
-  background: white;
-  border-radius: 50%;
-  padding: 6px;
-  border: 1px solid #ccc;
 }
 </style>
