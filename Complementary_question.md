@@ -83,3 +83,85 @@ Vue gère :
 synchronisation UI / données
 mise à jour du DOM
 état de l’application
+
+# id
+
+The id is mainly used so Vue can uniquely identify each item when rendering a list with v-for.
+
+Example:
+
+<City
+  v-for="city in cities"
+  :key="city.id"
+/>
+
+key helps Vue track which item changed, was added, or removed. Without a unique key, updates can behave oddly or less efficiently.
+
+So id is not for display here—it is an internal unique identifier for each city. Later it can also be useful for routing (/ville/1), editing, deleting, or database storage.
+
+# timeago
+
+Inspires confidence:
+
+- Popular package with many users/downloads
+- Clear documentation
+- Public source code on GitHub
+- Simple focused purpose
+- Open issues / maintenance visible
+
+Causes caution:
+
+- If no recent updates
+- Very few contributors
+- Many unresolved issues
+- No tests / poor docs
+- Excessive permissions or suspicious install scripts
+
+alternative
+
+Use native JavaScript:
+
+Intl.RelativeTimeFormat
+
+or packages like:
+
+date-fns
+dayjs
+moment.js (older)
+
+# Préambule - Point d'étape sur l'architecture de l'application
+
+## Laravel application
+
+| Web server             | Web browser       |
+| ---------------------- | ----------------- |
+| Store application data | Display web pages |
+| Route HTTP requests    |                   |
+| Render web pages       |                   |
+| Execute business logic |                   |
+
+## Vue.js application (SPA)
+
+| Web server             | Web browser                          |
+| ---------------------- | ------------------------------------ |
+| Store application data | Route requests (client-side routing) |
+| (API if present)       | Render web pages                     |
+|                        | Display web pages                    |
+|                        | Execute business logic               |
+
+
+## Key difference
+
+In Laravel, everything important (logic, data, rendering) is handled on the server.
+In Vue.js, most of the logic and rendering happens in the browser.
+
+## How to secure data in Vue.js
+
+You should not expose data directly in the frontend. Instead:
+
+- Use a backend API (Node, Laravel, etc.)
+- Require authentication (JWT, sessions)
+- Validate and authorize every request on the server
+- Only return necessary data to the client
+
+The frontend becomes just a consumer of a secured API.
