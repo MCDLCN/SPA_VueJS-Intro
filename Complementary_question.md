@@ -165,3 +165,7 @@ You should not expose data directly in the frontend. Instead:
 - Only return necessary data to the client
 
 The frontend becomes just a consumer of a secured API.
+
+# deep in vue
+
+Styles are scoped to the component so you need deep to get out of the scope and apply it
