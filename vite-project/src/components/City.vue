@@ -1,4 +1,6 @@
 <script setup>
+import { format } from 'timeago.js'
+
 defineProps({
   name: String,
   weather: String,
@@ -12,7 +14,7 @@ defineProps({
     <h2>{{ name }}</h2>
     <p>Weather: {{ weather }}</p>
     <p>Temperature: {{ temperature.toFixed(1) }} °C</p>
-    <p>Update: {{ updatedAt.toLocaleString() }}</p>
+    <p>Updated {{ format(updatedAt) }}</p>
   </div>
 </template>
 
