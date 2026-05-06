@@ -1,5 +1,4 @@
 <script setup>
-import { Icon } from '@iconify/vue'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()

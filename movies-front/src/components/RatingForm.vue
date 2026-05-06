@@ -11,7 +11,7 @@ const props = defineProps({
 const emit = defineEmits(['created'])
 
 const auth = useAuthStore()
-const note = ref(8)
+const note = ref()
 const content = ref('')
 const loading = ref(false)
 const error = ref('')
@@ -62,7 +62,7 @@ async function submitRating() {
 
     <label>
       Review optional
-      <textarea v-model="content" rows="4" placeholder="Write a short review..." />
+      <textarea v-model="content" rows="4" placeholder="Write your review..." />
     </label>
 
     <button :disabled="loading" type="submit">

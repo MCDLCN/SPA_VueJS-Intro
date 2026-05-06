@@ -40,6 +40,24 @@ const countries = computed(() =>
   movie.value?.countries?.join(', ') || 'Unknown country'
 )
 
+const currentUserId = computed(() =>
+  auth.user?.['@id'] || auth.user?.id
+)
+
+const existingReview = computed(() =>
+  reviews.value.find((review) => {
+    const reviewUser = review.user?.['@id'] || review.user?.id
+    return reviewUser === currentUserId.value
+  })
+)
+
+const existingRating = computed(() =>
+  ratings.value.find((rating) => {
+    const ratingUser = rating.user?.['@id'] || rating.user?.id
+    return ratingUser === currentUserId.value
+  })
+)
+
 async function fetchMovieData() {
   loading.value = true
   error.value = ''
@@ -59,6 +77,15 @@ async function fetchMovieData() {
   } finally {
     loading.value = false
   }
+}
+
+function ratingForReview(review) {
+  return ratings.value.find((rating) => {
+    const reviewUser = review.user?.['@id'] || review.user?.id
+    const ratingUser = rating.user?.['@id'] || rating.user?.id
+
+    return reviewUser && ratingUser && reviewUser === ratingUser
+  })
 }
 
 onMounted(fetchMovieData)
@@ -138,7 +165,34 @@ onMounted(fetchMovieData)
     </section>
 
     <section class="content-grid">
-      <RatingForm v-if="auth.isAuthenticated" :movie-id="id" @created="fetchMovieData" />
+      <template v-if="auth.isAuthenticated">
+        <div v-if="existingReview" class="panel">
+          <h2>Your review</h2>
+
+          <p class="muted">
+            You already reviewed this movie.
+          </p>
+
+          <p>
+            Rating:
+            {{ existingRating?.note || 'No rating' }}/10
+          </p>
+
+          <p>
+            {{ existingReview.content }}
+          </p>
+
+          <button class="button-like">
+            Edit review
+          </button>
+        </div>
+
+        <RatingForm
+          v-else
+          :movie-id="id"
+          @created="fetchMovieData"
+        />
+      </template>
 
       <div v-else class="panel">
         <h2>Want to rate it?</h2>
@@ -157,6 +211,12 @@ onMounted(fetchMovieData)
           class="review-card"
         >
           <strong>{{ reviewAuthor(review) }}</strong>
+
+          <p v-if="ratingForReview(review)" class="muted">
+            <Icon icon="ph:star-fill" />
+            {{ ratingForReview(review).note }}/10
+          </p>
+
           <p>{{ reviewContent(review) }}</p>
         </article>
       </div>

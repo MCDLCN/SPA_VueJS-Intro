@@ -29,6 +29,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: this.token, user: this.user }))
+      localStorage.setItem('token', this.token)
     },
 
     async login(email, password) {
@@ -39,9 +40,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     logout() {
-      this.token = ''
+      this.token = null
       this.user = null
+
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem('token')
     },
   },
 })
