@@ -8,12 +8,14 @@ const auth = useAuthStore()
 <template>
   <header class="app-header">
     <RouterLink class="brand" to="/">
-      <Icon icon="ph:film-slate-bold" />
       Movies
     </RouterLink>
 
+    <RouterLink class="center-link" to="/">
+      Listing
+    </RouterLink>
+
     <nav>
-      <RouterLink to="/">Listing</RouterLink>
       <RouterLink v-if="auth.isAuthenticated" to="/profile">Profile</RouterLink>
       <RouterLink v-if="!auth.isAuthenticated" to="/login">Login</RouterLink>
       <button v-else class="link-button" @click="auth.logout()">Logout</button>
@@ -24,3 +26,22 @@ const auth = useAuthStore()
     <RouterView />
   </main>
 </template>
+
+<style scoped>
+.app-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.center-link {
+  justify-self: center;
+}
+
+nav {
+  justify-self: end;
+  display: flex;
+  gap: 1rem;
+}
+
+</style>
