@@ -14,9 +14,23 @@ onMounted(async () => {
     cities.value = [
       {
         id: 1,
-        name: 'City 1',
+        name: 'Paris',
         weather: 'Sunny',
         temperature: 22,
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        name: 'Lyon',
+        weather: 'Cloudy',
+        temperature: 18,
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        name: 'Marseille',
+        weather: 'Windy',
+        temperature: 25,
         updatedAt: new Date()
       }
     ]

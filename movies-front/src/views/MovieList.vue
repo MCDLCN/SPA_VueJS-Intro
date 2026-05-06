@@ -21,12 +21,12 @@ async function fetchMovies() {
 
   try {
     const { data } = await api.get('/movies', {
-      params: {
-        page: page.value,
-        itemsPerPage,
-        title: search.value || undefined,
-      },
-    })
+    params: {
+      page: page.value,
+      itemsPerPage,
+      title: search.value || undefined,
+    },
+  })
 
     movies.value = collectionItems(data)
     total.value = totalItems(data)
