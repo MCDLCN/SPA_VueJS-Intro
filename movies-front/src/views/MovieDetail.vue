@@ -6,7 +6,7 @@ import { collectionItems, moviePoster, movieTitle, reviewAuthor, reviewContent }
 import { useAuthStore } from '@/stores/auth'
 import RatingForm from '@/components/RatingForm.vue'
 
-const props = defineProps({
+const movieProp = defineProps({
   id: { type: String, required: true },
 })
 
@@ -17,6 +17,7 @@ const reviews = ref([])
 const loading = ref(false)
 const error = ref('')
 const imageErrors = ref({})
+const isEditingReview = ref(false)
 
 const averageRating = computed(() => {
   if (!ratings.value.length) return null
@@ -44,19 +45,37 @@ const currentUserId = computed(() =>
   auth.user?.['@id'] || auth.user?.id
 )
 
-const existingReview = computed(() =>
-  reviews.value.find((review) => {
-    const reviewUser = review.user?.['@id'] || review.user?.id
-    return reviewUser === currentUserId.value
-  })
-)
+const existingReview = computed(() => {
+  return reviews.value.find((review) => {
+    const reviewUser =
+      review.user?.['@id'] ||
+      review.user ||
+      review.author?.['@id'] ||
+      review.author ||
+      review.account?.['@id'] ||
+      review.account
 
-const existingRating = computed(() =>
-  ratings.value.find((rating) => {
-    const ratingUser = rating.user?.['@id'] || rating.user?.id
-    return ratingUser === currentUserId.value
+    const currentUser =
+      auth.user?.['@id'] ||
+      `/api/users/${auth.user?.id}` ||
+      auth.user?.username
+
+    return (
+      reviewUser === currentUser ||
+      review.user?.username === auth.user?.username ||
+      review.author?.username === auth.user?.username ||
+      review.username === auth.user?.username
+    )
   })
-)
+})
+
+const existingRating = computed(() => {
+  return ratings.value.find((rating) => {
+    return rating.user?.['@id'] === auth.user?.['@id']
+      || rating.user?.id === auth.user?.id
+      || rating.user?.username === auth.user?.username
+  })
+})
 
 async function fetchMovieData() {
   loading.value = true
@@ -64,9 +83,9 @@ async function fetchMovieData() {
 
   try {
     const [movieResponse, ratingsResponse, reviewsResponse] = await Promise.all([
-      api.get(`/movies/${props.id}`),
-      api.get(`/movies/${props.id}/ratings`),
-      api.get(`/movies/${props.id}/reviews`),
+      api.get(`/movies/${movieProp.id}`),
+      api.get(`/movies/${movieProp.id}/ratings`),
+      api.get(`/movies/${movieProp.id}/reviews`),
     ])
 
     movie.value = movieResponse.data
@@ -86,6 +105,10 @@ function ratingForReview(review) {
 
     return reviewUser && ratingUser && reviewUser === ratingUser
   })
+}
+
+function startEditingReview() {
+  isEditingReview.value = true
 }
 
 onMounted(fetchMovieData)
@@ -174,6 +197,7 @@ onMounted(fetchMovieData)
           </p>
 
           <p>
+            
             Rating:
             {{ existingRating?.note || 'No rating' }}/10
           </p>
@@ -182,9 +206,22 @@ onMounted(fetchMovieData)
             {{ existingReview.content }}
           </p>
 
-          <button class="button-like">
+          <button
+            v-if="!isEditingReview"
+            class="button-like"
+            @click="startEditingReview"
+          >
             Edit review
           </button>
+
+          <RatingForm
+            v-else
+            :movie-id="id"
+            :review-to-edit="existingReview"
+            :rating-to-edit="existingRating"
+            @updated="fetchMovieData"
+            @cancel="isEditingReview = false"
+          />
         </div>
 
         <RatingForm
