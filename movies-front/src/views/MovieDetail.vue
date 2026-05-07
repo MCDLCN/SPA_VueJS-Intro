@@ -41,39 +41,21 @@ const countries = computed(() =>
   movie.value?.countries?.join(', ') || 'Unknown country'
 )
 
-const currentUserId = computed(() =>
-  auth.user?.['@id'] || auth.user?.id
-)
+const currentUserId = computed(() => auth.user?.id)
+
+const currentUserIri = computed(() => auth.user?.['@id'] || `/api/users/${auth.user?.id}`)
 
 const existingReview = computed(() => {
   return reviews.value.find((review) => {
-    const reviewUser =
-      review.user?.['@id'] ||
-      review.user ||
-      review.author?.['@id'] ||
-      review.author ||
-      review.account?.['@id'] ||
-      review.account
-
-    const currentUser =
-      auth.user?.['@id'] ||
-      `/api/users/${auth.user?.id}` ||
-      auth.user?.username
-
-    return (
-      reviewUser === currentUser ||
-      review.user?.username === auth.user?.username ||
-      review.author?.username === auth.user?.username ||
-      review.username === auth.user?.username
-    )
+    return review.user?.id === currentUserId.value
+      || review.user?.['@id'] === currentUserIri.value
   })
 })
 
 const existingRating = computed(() => {
   return ratings.value.find((rating) => {
-    return rating.user?.['@id'] === auth.user?.['@id']
-      || rating.user?.id === auth.user?.id
-      || rating.user?.username === auth.user?.username
+    return rating.user?.id === currentUserId.value
+      || rating.user?.['@id'] === currentUserIri.value
   })
 })
 
@@ -100,10 +82,8 @@ async function fetchMovieData() {
 
 function ratingForReview(review) {
   return ratings.value.find((rating) => {
-    const reviewUser = review.user?.['@id'] || review.user?.id
-    const ratingUser = rating.user?.['@id'] || rating.user?.id
-
-    return reviewUser && ratingUser && reviewUser === ratingUser
+    return rating.user?.id === review.user?.id
+      || rating.user?.['@id'] === review.user?.['@id']
   })
 }
 
